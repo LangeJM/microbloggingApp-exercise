@@ -1,11 +1,22 @@
 import React from 'react'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Spinner from 'react-bootstrap/Spinner'
+
+import './App.css';
+
+import axios from 'axios'
+
 import Navigation from './components/Navigation'
 import CreatePost from './components/CreatePost'
 import PostsList from './components/PostsList'
-import Spinner from 'react-bootstrap/Spinner'
-import './App.css';
-import axios from 'axios'
+import Profile from './components/Profile'
 
 class App extends React.Component {
   constructor(props) {
@@ -14,7 +25,6 @@ class App extends React.Component {
       tweets: [],
       buttonDisabled: false,
       isLoading: false,
-      who: 'cares',
     }
     this.apiUrl = 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet';
   }
@@ -69,11 +79,24 @@ class App extends React.Component {
       element = <PostsList className="row d-flex" tweets={this.state.tweets} />;
     }
     return (
-      <div className="App justify-content-center">
-        <Navigation />
-        <CreatePost className="row d-flex" onNewTweet={(newTweet) => this.onNewTweet(newTweet)} buttonDisabled={this.state.buttonDisabled} this />
-        {element}
-      </div>
+      <Router>
+        <Switch>
+          <Route path="/home">
+            <div className="App justify-content-center">
+            <Navigation />
+            <CreatePost className="row d-flex" onNewTweet={(newTweet) => this.onNewTweet(newTweet)} buttonDisabled={this.state.buttonDisabled} this />
+            {element}
+            </div>
+          </Route>
+          <Route path="/profile">
+            <Navigation />
+            <Profile />
+          </Route>
+          <Route path="/">
+          <Navigation />
+        </Route>
+        </Switch>
+      </Router>
     );
   }
 }
