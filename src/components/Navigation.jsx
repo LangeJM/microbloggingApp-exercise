@@ -3,8 +3,6 @@ import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import Container  from 'react-bootstrap/Container'
 
-// import {Nav, NavDropdown, Form, FormControl, Button} from 
-
 const Navigation = (props) => {
     return (
         <Container>

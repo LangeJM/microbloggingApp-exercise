@@ -25,3 +25,4 @@ yarn.lock
 *.pptx
 *.doc
 *.docx
+/MS01
