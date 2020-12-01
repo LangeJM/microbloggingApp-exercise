@@ -19,7 +19,7 @@ const Navigation = (props) => {
             </Navbar.Collapse>
             </Navbar>
         </Container>
-)}
-
+    )
+}
 
 export default Navigation;

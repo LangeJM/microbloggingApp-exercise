@@ -12,7 +12,6 @@ const Post = (props) => {
                 {props.postBody}
             </div>
         </div>
-
     )
 
 }
