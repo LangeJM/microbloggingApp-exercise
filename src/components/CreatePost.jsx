@@ -1,34 +1,22 @@
 import React from 'react';
-import { Card, Button, Form, Container } from 'react-bootstrap'
-
+import { Card, Button, Form } from 'react-bootstrap'
 
 class CreatePost extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.initialState = {
             timeStamp: ' ',
             postBody: ' ',
             postAuthor: ' ',
             buttonDisabled: true,
-        }
+        };
+        this.state = this.initialState;
     }
 
-    handleBodyChange(event) {
-        this.setState({ postBody: event.target.value });
-        if (this.state.postBody.length !== 0 && this.state.postBody.length <= 140) this.setState({ buttonDisabled: false })
-        else this.setState({ buttonDisabled: true })
-    }    
-
     resetState() {
-        const resetState = {
-            timeStamp: ' ',
-            postBody: ' ',
-            postAuthor: ' ',
-            buttonDisabled: true,
-        }
-        this.setState(resetState)
-    
-    } 
+        this.setState(this.initialState);
+        console.log(this.state);
+    }
 
     handleNewTweetSubmit(event) {
         event.preventDefault();
@@ -38,17 +26,19 @@ class CreatePost extends React.Component {
         const newPost = {
             timeStamp: timeStamp,
             postBody: this.state.postBody,
-            postAuthor: 'Som Oather'
+            postAuthor: 'Hans-Joachim Peter'
         };
-        this.props.onNewTweet(newPost);
-        console.log(newPost);
-        // this.setState(newPost);
-        // this.setState({ buttonDisabled: true, postBody: '', timeStamp: '', postAuthor: '' }); //this does not work for some reason
-        
+        this.props.onNewTweet(newPost);  
+        this.resetState(); //Why doesn't this work?
     }
 
+    handleBodyChange(event) {
+        this.setState({ postBody: event.target.value });
+        if (this.state.postBody.length !== 0 && this.state.postBody.length <= 140) this.setState({ buttonDisabled: false })
+        else this.setState({ buttonDisabled: true })
+    }    
+
     render() {
- 
         return (
             <div className="d-flex justify-content-center">
                 <Card className="m-5 create-post">
@@ -61,7 +51,5 @@ class CreatePost extends React.Component {
         )
     }
 }
-
-
 
 export default CreatePost;

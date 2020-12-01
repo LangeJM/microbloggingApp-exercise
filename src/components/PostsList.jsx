@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row } from 'react-bootstrap';
+// import { Container, Row } from 'react-bootstrap';
 import Post from './Post';
 
 
@@ -14,8 +14,8 @@ const PostsList = (props) => {
                 postAuthor={post.postAuthor}
             />
             )}
-    </div>
-    
-)}
+    </div>    
+    )
+}
 
 export default PostsList;

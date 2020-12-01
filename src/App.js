@@ -18,47 +18,41 @@ class App extends React.Component {
 
   componentDidMount() {
     console.log('localforage is: ', localForage)
+    this.getFromDb('posts').then((posts) => {
+      this.setState(() => {
+        return { posts }
+      });
+    })
   }
 
   saveToDb(newPost) {
-    localForage.setItem('post', newPost).then(() => {
-      // Do other things once the value has been saved.
-      console.log('Post has been saved');
+    localForage.setItem('posts', newPost).then(() => {
     }).catch(function(err) {
-        // This code runs if there were any errors
         console.log(err);
     });    
   }
 
-  getFromDb() {
-    localForage.getItem('somekey', 'some value').then(function (value) {
-      // Do other things once the value has been saved.
-      console.log(value);
-    }).catch(function(err) {
-        // This code runs if there were any errors
-        console.log(err);
-    });    
+  getFromDb(key) {
+    if (!localForage.getItem(key)) return;
+    return localForage.getItem(key);
   }
   
   
-  onNewTweet(newPost) {
+  onNewTweet(newPost, ) {
     this.setState((state) => {
       return { posts: [newPost, ...state.posts] }
     });
+    this.saveToDb(this.state.posts);
   }
-
 
   render() {
     return (
       <div className="App justify-content-center">
-        
         <Navigation />
         <CreatePost className="row d-flex" onNewTweet={(newPost) => this.onNewTweet(newPost)} />
         <PostsList className="row d-flex" posts={this.state.posts} />
-
-        
       </div>
-  );
+    );
   }
   
 }
