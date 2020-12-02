@@ -21,7 +21,6 @@ class CreatePost extends React.Component {
         const newTweet = {
             date: newDate,
             content: this.state.content,
-            userName: 'Hans-Joachim Peter',
             key: newDate,
         };
         this.props.onNewTweet(newTweet);

@@ -25,6 +25,7 @@ class App extends React.Component {
       tweets: [],
       buttonDisabled: false,
       isLoading: false,
+      userName: 'Hans-Joachim Peter',
     }
     this.apiUrl = 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet';
   }
@@ -50,7 +51,7 @@ class App extends React.Component {
     try {
       const res = await axios.post(apiUrl, {
         content: newTweet.content,
-        userName: newTweet.userName,
+        userName: this.state.userName,
         date: newTweet.date,
       });
       console.log(`Status code: ${res.status}`); //potential implementation of dialog to inform user when post req not successful..see below. This comment serves as a temporary reminder and will be deleted eventually.
@@ -65,6 +66,10 @@ class App extends React.Component {
     this.setState({ buttonDisabled: true })
     this.postWithApi(newTweet); 
     this.setState({ buttonDisabled: false })
+  }
+
+  onNewUsername(newUsername) {
+    this.setState({ userName: newUsername }); 
   }
 
   render() {
@@ -89,8 +94,10 @@ class App extends React.Component {
             </div>
           </Route>
           <Route path="/profile">
+            <div className="App justify-content-center">
             <Navigation />
-            <Profile />
+            <Profile onNewUsername={(newUsername) => this.onNewUsername(newUsername)}/>
+            </div>
           </Route>
           <Route path="/">
           <Navigation />
