@@ -3,16 +3,18 @@ import Post from './Post';
 
 const PostsList = (props) => {
     return (
-        <div className="d-flex align-items-center flex-column">
-        {props.tweets.map(tweet => 
-            <Post 
-                key={tweet.id} 
-                date={tweet.date}
-                content={tweet.content}
-                userName={tweet.userName}
-            />
-        )}
-    </div>    
+        <div className="d-flex justify-content-center">
+            <div className= "d-flex flex-column align-items-center">
+                {props.tweets.map(tweet => 
+                    <Post 
+                        key={tweet.id} 
+                        date={tweet.date}
+                        content={tweet.content}
+                        userName={tweet.userName}
+                    />
+                )}
+            </div>
+        </div>    
     )
 }
 

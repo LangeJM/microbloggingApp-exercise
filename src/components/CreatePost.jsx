@@ -7,7 +7,7 @@ class CreatePost extends React.Component {
         this.initialState = {
             date: ' ',
             content: ' ',
-            userName: ' ',
+            userName: this.props.userName,
             buttonDisabled: true,
         };
         this.state = this.initialState;
@@ -15,13 +15,13 @@ class CreatePost extends React.Component {
 
     handleNewTweetSubmit(event) {
         event.preventDefault();
-        
         let newDate = new Date();
         newDate = newDate.toISOString();
         const newTweet = {
             date: newDate,
             content: this.state.content,
-            key: newDate,
+            userName: this.state.userName,
+            key: `${this.state.userName}-${newDate}`,
         };
         this.props.onNewTweet(newTweet);
         this.setState({ content: '' });

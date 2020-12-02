@@ -6,15 +6,13 @@ class Profile extends React.Component {
         super(props);
         this.state = {
             username: '',
-            displayUsername: ''
+            displayUsername: props.displayUsername,
         }
     }
 
     handleNewUsername(event) {
         let username = event.target.value; 
         this.setState({ username: username });
-        // if (username === '' || tweetText.length > 140) this.setState({ buttonDisabled: true })
-        // else this.setState({ buttonDisabled: false })
     }
 
     handleNewUsernameSubmit(event) {
@@ -28,7 +26,9 @@ class Profile extends React.Component {
     render() {
         return (
             <div className="d-flex flex-column justify-content-center mt-5">
-                <h1 className="mb-5">Profile</h1>
+                <div className="row justify-content-center ">
+                    <h1 className="mb-5 text-left">Profile</h1>
+                </div>
                 <div className="row justify-content-center">
                     <label className="pl-2 mb-3 d-flex row width-30rem" htmlFor="userNameId"><strong>Current Username: {this.state.displayUsername} </strong></label>
                 </div>
@@ -53,7 +53,6 @@ class Profile extends React.Component {
             </div>
         )
     }
-
 }
 
 export default Profile;
