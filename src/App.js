@@ -23,7 +23,7 @@ class App extends React.Component {
       tweets: [],
       buttonDisabled: true,
       isLoading: false,
-      userName: 'Hans-Joachim Peter',
+      userName: 'DemoNap',
     }
     this.apiUrl = 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet';
   }
