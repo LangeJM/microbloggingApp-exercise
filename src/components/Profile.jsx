@@ -45,7 +45,7 @@ class Profile extends React.Component {
                         <InputGroup.Append>
                             <Button
                                 onClick={event => this.handleNewUsernameSubmit(event)}
-                                variant="outline-secondary">Change Username
+                                variant="secondary">Change Username
                             </Button>
                         </InputGroup.Append>
                     </InputGroup>
