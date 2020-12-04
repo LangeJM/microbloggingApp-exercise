@@ -16,6 +16,8 @@ import CreatePost from './components/CreatePost'
 import PostsList from './components/PostsList'
 import Profile from './components/Profile'
 
+import microBlogDb from './components/firebase.js';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -29,9 +31,14 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.getWithApi(), 60000);
-    this.getWithApi();
+    // this.interval = setInterval(() => this.getWithApi(), 60000);
+    // this.getWithApi();
+    console.log('comp did mount, nothing else running here');
+
   }
+
+
+
 
   async getWithApi() {
     this.setState({ isLoading: true })

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Card, Button, Form } from 'react-bootstrap'
+import microBlogDb from './firebase';
+import { v4 as uuidv4 } from 'uuid';
 
 class CreatePost extends React.Component {
     constructor(props) {
@@ -16,16 +18,27 @@ class CreatePost extends React.Component {
 
     handleNewTweetSubmit(event) {
         event.preventDefault();
-        let newDate = new Date();
-        newDate = newDate.toISOString();
+        const newDate = new Date().toISOString();
+        const tweetId = `tweet-${uuidv4()}`;
+        
         const newTweet = {
             date: newDate,
             content: this.state.content,
             userName: this.state.userName,
-            key: `${this.state.userName}-${newDate}`,
         };
         this.props.onNewTweet(newTweet);
         this.setState({ content: '' });
+
+        //save to firebase database 
+        microBlogDb.collection('tweets').doc(tweetId).set({
+            userName: this.state.userName,
+            content: this.state.content,
+            tweetCreationDate: newDate,
+        }).then(function () {
+        console.log("New tweet saved!");
+        }).catch(function (error) {
+        console.error("An error occurred:", error);
+        });
     }
 
     handleBodyChange(event) {

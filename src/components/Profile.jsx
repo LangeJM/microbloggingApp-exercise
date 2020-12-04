@@ -1,27 +1,68 @@
 import React from 'react';
-import { InputGroup, Button, FormControl } from 'react-bootstrap'
+import { Form, Image, Button, } from 'react-bootstrap'
+import microBlogDb from './firebase';
+import { v4 as uuidv4 } from 'uuid';
+
+
 
 class Profile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: '',
-            displayUsername: props.displayUsername,
+            userName: 'Test0815',
+            email: '',
+            password: '',
+            userImage: '',
+            showChangesSaved: "invisible",
+            submitDisabled: ""
         }
     }
 
     handleNewUsername(event) {
-        let username = event.target.value; 
-        this.setState({ username: username });
+        const userName = event.target.value; 
+        this.setState({ userName: userName });
+    }
+
+    handleNewEmail(event) {
+        const email = event.target.value;
+        this.setState({ email: email });
+        if (this.state.userName === '') this.setState({ username: email });
+    }
+
+    handleNewPassword(event) {
+        const password = event.target.value; 
+        this.setState({ password: password });
     }
 
     handleNewUsernameSubmit(event) {
         event.preventDefault();
-        this.setState({displayUsername:this.state.username} )
-        const newUsername = this.state.username;
+        let { userName, email, password } = this.state;
+        this.setState({
+            userName: userName,
+            email: email,
+            password: password,
+            showChangesSaved: 'visible',
+        });
+        console.log(this.state);
+        const newUsername = this.state.userName;
         this.props.onNewUsername(newUsername);
-        this.setState({ username:'' });
+
+        const userId = `user-${uuidv4()}`.split('-').slice(0, 3).join('-');
+        const userDate = new Date();
+        //save to firebase database 
+        microBlogDb.collection('users').doc(userId).set({
+            userName: this.state.userName,
+            email: this.state.email,
+            password: this.state.password,
+            userImage: this.state.userImage,
+            userCreationDate: userDate
+        }).then(function () {
+        console.log("New user saved!");
+        }).catch(function (error) {
+        console.error("An error occurred:", error);
+        });
     }
+
 
     render() {
         return (
@@ -30,25 +71,76 @@ class Profile extends React.Component {
                     <h1 className="mb-5 text-left">Profile</h1>
                 </div>
                 <div className="row justify-content-center">
-                    <label className="pl-2 mb-3 d-flex row width-30rem" htmlFor="userNameId"><strong>Current Username: {this.state.displayUsername} </strong></label>
-                </div>
-                <div className="row justify-content-center">
-                    <InputGroup className="width-30rem mb-3 d-flex row">
-                        <FormControl
-                            placeholder="New Username"
-                            aria-label="Recipient's username"
-                            id="userNameId" 
-                            value={this.state.username}
-                            required
-                            onChange={event => this.handleNewUsername(event)}
-                        />
-                        <InputGroup.Append>
-                            <Button
-                                onClick={event => this.handleNewUsernameSubmit(event)}
-                                variant="secondary">Change Username
-                            </Button>
-                        </InputGroup.Append>
-                    </InputGroup>
+                    <Form>
+                        <Form.Group>
+                            {/* <Form.Control type="text" placeholder="First name" />
+                            <br />
+                            <Form.Control type="text" placeholder="Second Name" />
+                            <br /> */}
+                            <Form.Control
+                                type="text"
+                                value={this.state.userName}
+                                placeholder="User name"
+                                onInput={event => this.handleNewUsername(event)}
+                            />
+                                
+                            <Form.Text className="text-muted">
+                                Will show email address when left empty.
+                            </Form.Text>
+                        </Form.Group>
+                            
+                        <Form.Group controlId="formBasicEmail">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control
+                                type="email"
+                                value={this.state.email}
+                                placeholder="Enter email"
+                                onInput={event => this.handleNewEmail(event)}
+                            />
+                            <Form.Text className="text-muted">
+                            We'll never share your email with anyone else.
+                            </Form.Text>
+                        </Form.Group>
+
+                        <Form.Group controlId="formBasicPassword">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={this.state.password}
+                                placeholder="Enter Password"
+                                onInput={event => this.handleNewPassword(event)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formBasicCheckbox">
+                            <Form.Check type="checkbox" label="Remember me" />
+                        </Form.Group>
+                        <Form.Group>
+                            {/* <strong>Your profile picture:</strong> */}
+                            <Image src={require('../defaultProfileImage.png')} alt="Cat profile picture" rounded fluid />
+                            <Form.File 
+                            className="position-relative"
+                            // required
+                            // name="file"
+                            label="New Profile Picture"
+                            // onChange={handleChange}
+                            // isInvalid={!!errors.file}
+                            // feedback={errors.file}
+                            // id="validationFormik107"
+                            // feedbackTooltip
+                            />
+                        </Form.Group>
+                        <Button
+                            variant="primary" type="submit"
+                            onClick={event => this.handleNewUsernameSubmit(event)}
+                        >
+                            Save Changes
+                        </Button>
+                        <Form.Text
+                            className={this.state.showChangesSaved}>
+                            Changes Saved!
+                        </Form.Text>
+                    </Form>
                 </div>
             </div>
         )

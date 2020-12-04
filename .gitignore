@@ -26,3 +26,5 @@ yarn.lock
 *.doc
 *.docx
 /MS0*
+Profile_orig.jsx
+Firebase-Yarn-workflow.txt
