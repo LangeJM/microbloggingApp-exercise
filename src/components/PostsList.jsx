@@ -7,8 +7,8 @@ const PostsList = (props) => {
             <div className= "d-flex flex-column align-items-center">
                 {props.tweets.map(tweet => 
                     <Post 
-                        key={tweet.id} 
-                        date={tweet.date}
+                        // key={tweet.id} 
+                        tweetCreationDate={tweet.tweetCreationDate}
                         content={tweet.content}
                         userName={tweet.userName}
                     />

@@ -9,13 +9,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Spinner from 'react-bootstrap/Spinner'
 import './App.css';
 
-import axios from 'axios'
-
 import Navigation from './components/Navigation'
 import CreatePost from './components/CreatePost'
 import PostsList from './components/PostsList'
 import Profile from './components/Profile'
-
 import microBlogDb from './components/firebase.js';
 
 class App extends React.Component {
@@ -31,52 +28,22 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    // this.interval = setInterval(() => this.getWithApi(), 60000);
-    // this.getWithApi();
-    console.log('comp did mount, nothing else running here');
-
+    this.getFromFirebaseDb();    
   }
 
-
-
-
-  async getWithApi() {
+  getFromFirebaseDb() {
+    let tweetsArray = [];
     this.setState({ isLoading: true })
-    const apiUrl = this.apiUrl;
-    try {
-      const response = await axios.get(apiUrl);
-      this.setState({ tweets:response.data.tweets })
-    } catch (error) {
-      console.error(error);
-    }
-    this.setState({isLoading:false})
-  }  
-
-  async postWithApi(newTweet) {
-    this.setState({buttonDisabled:true})
-    const apiUrl = this.apiUrl;
-    try {
-      const response = await axios.post(apiUrl, {
-        content: newTweet.content,
-        userName: this.state.userName,
-        date: newTweet.date,
-      });
-      console.log(response)
-    } catch (error) {
-      console.error(error);
-      window.confirm(`The tweet could not be posted. The server responded with : ${error}.`)
-    }
-    // this.getWithApi();
-    this.setState({buttonDisabled:false})
+    microBlogDb.collection("tweets").get().then(function (querySnapshot) {
+      querySnapshot.forEach(function (doc) {
+        tweetsArray.push(doc.data());
+        tweetsArray = tweetsArray.sort((a, b) => (a.tweetCreationDate < b.tweetCreationDate) ? 1 : ((b.tweetCreationDate < a.tweetCreationDate) ? -1 : 0));   
+        });
+    }).then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
   }
 
-  onNewTweet(newTweet) {
-    this.setState({ buttonDisabled: true })
-    this.postWithApi(newTweet); 
-    this.setState((state) => {
-      return { tweets: [newTweet, ...state.tweets] }
-    });
-    this.setState({ buttonDisabled: false })
+  onNewTweet() {
+    this.getFromFirebaseDb();
   }
 
   onNewUsername(newUsername) {

@@ -3,8 +3,6 @@ import { Form, Image, Button, } from 'react-bootstrap'
 import microBlogDb from './firebase';
 import { v4 as uuidv4 } from 'uuid';
 
-
-
 class Profile extends React.Component {
     constructor(props) {
         super(props);
@@ -43,7 +41,6 @@ class Profile extends React.Component {
             password: password,
             showChangesSaved: 'visible',
         });
-        console.log(this.state);
         const newUsername = this.state.userName;
         this.props.onNewUsername(newUsername);
 
@@ -56,8 +53,6 @@ class Profile extends React.Component {
             password: this.state.password,
             userImage: this.state.userImage,
             userCreationDate: userDate
-        }).then(function () {
-        console.log("New user saved!");
         }).catch(function (error) {
         console.error("An error occurred:", error);
         });
@@ -73,10 +68,6 @@ class Profile extends React.Component {
                 <div className="row justify-content-center">
                     <Form>
                         <Form.Group>
-                            {/* <Form.Control type="text" placeholder="First name" />
-                            <br />
-                            <Form.Control type="text" placeholder="Second Name" />
-                            <br /> */}
                             <Form.Control
                                 type="text"
                                 value={this.state.userName}
@@ -116,7 +107,9 @@ class Profile extends React.Component {
                             <Form.Check type="checkbox" label="Remember me" />
                         </Form.Group>
                         <Form.Group>
-                            {/* <strong>Your profile picture:</strong> */}
+                            {/* 
+                            Need the comments here for future wip 
+                            */}
                             <Image src={require('../defaultProfileImage.png')} alt="Cat profile picture" rounded fluid />
                             <Form.File 
                             className="position-relative"

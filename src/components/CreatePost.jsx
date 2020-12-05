@@ -20,35 +20,27 @@ class CreatePost extends React.Component {
         event.preventDefault();
         const newDate = new Date().toISOString();
         const tweetId = `tweet-${uuidv4()}`;
-        
-        const newTweet = {
-            date: newDate,
-            content: this.state.content,
-            userName: this.state.userName,
-        };
-        this.props.onNewTweet(newTweet);
-        this.setState({ content: '' });
-
         //save to firebase database 
         microBlogDb.collection('tweets').doc(tweetId).set({
             userName: this.state.userName,
             content: this.state.content,
             tweetCreationDate: newDate,
-        }).then(function () {
-        console.log("New tweet saved!");
         }).catch(function (error) {
         console.error("An error occurred:", error);
         });
+        this.setState({ content: '' });
+        //Still want to refresh tweet list (from firebase) on new tweet
+        this.props.onNewTweet();
     }
 
     handleBodyChange(event) {
         let tweetText = event.target.value; 
         this.setState({ content: tweetText });
-        if (tweetText === '') this.setState({ buttonDisabled: true })
+        if (tweetText === '') this.setState({ buttonDisabled: true });
         else if (tweetText.length > 140) {
             this.setState({ buttonDisabled: true, maxCharsClass: "visible text-danger" });
         }
-        else this.setState({ buttonDisabled: false,  maxCharsClass: "invisible"})
+        else this.setState({ buttonDisabled: false, maxCharsClass: "invisible" });
     }    
 
     render() {
