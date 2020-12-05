@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Form } from 'react-bootstrap'
-import microBlogDb from './firebase';
+import {microBlogDb} from './firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 class CreatePost extends React.Component {

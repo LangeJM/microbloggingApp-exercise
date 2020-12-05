@@ -13,7 +13,9 @@ import Navigation from './components/Navigation'
 import CreatePost from './components/CreatePost'
 import PostsList from './components/PostsList'
 import Profile from './components/Profile'
-import microBlogDb from './components/firebase.js';
+import SignIn from './components/SignIn.jsx'
+// import microBlogDb from './components/firebase.js';
+import {microBlogDb} from './components/firebase.js';
 
 class App extends React.Component {
   constructor(props) {
@@ -70,11 +72,16 @@ class App extends React.Component {
             <Profile displayUsername = {this.state.userName} onNewUsername={(newUsername) => this.onNewUsername(newUsername)}/>
             </div>
           </Route>
-          <Route path="/">
+          <Route path="/home">
             <div className="App justify-content-center">
               <Navigation />
               <CreatePost className="row d-flex" userName = {this.state.userName} onNewTweet={(newTweet) => this.onNewTweet(newTweet)} buttonDisabled={this.state.buttonDisabled}/>
               {element}
+            </div>
+          </Route>
+          <Route path="/">
+            <div className="App justify-content-center">
+              <SignIn />
             </div>
         </Route>
         </Switch>

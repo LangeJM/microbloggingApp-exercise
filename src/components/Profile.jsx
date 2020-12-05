@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Image, Button, } from 'react-bootstrap'
-import microBlogDb from './firebase';
+import {microBlogDb} from './firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 class Profile extends React.Component {

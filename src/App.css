@@ -34,3 +34,23 @@ body {
   box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1),
     0 0 0 2px rgb(173, 216, 230, 0.2), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
 }
+
+/* For the time being the way to make the firebase pre-build ui fit better */
+.firebaseui-list-item {
+  list-style-type: none;
+}
+
+.firebaseui-idp-icon {
+  height: 2rem;
+  width: 5rem;
+}
+
+.firebaseui-idp-text-short {
+  display: none;
+}
+
+.firebaseui-id-idp-button {
+  width: 18rem;
+  text-align: left;
+  margin: 0.1rem;
+}
