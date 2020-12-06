@@ -8,7 +8,7 @@ import {
 const Navigation = () => {
     return (
         <div className="nav-bar d-flex justify-content-center" >
-            <div className="w-50">
+            <div className="ml-5">
                 <Navbar>
                 <Navbar.Brand>Micro Blogging App</Navbar.Brand>
                     <Nav className="mr-auto">
@@ -16,6 +16,22 @@ const Navigation = () => {
                         <Link className="m-2" to="/profile" href="#link"><strong>Profile</strong></Link>
                     </Nav>
                 </Navbar>
+            </div>
+            <div className="ml-auto d-flex justify-content-center flex-column">
+                <div className="d-flex row">
+                    <div className="px-2 pt-1">
+                    Logged in as:
+                    </div>
+                    <div className="px-1 pt-1 mr-5">
+                        Placeholder
+                    </div>
+                </div>
+                <div className="ml-5 d-flex row">
+                    Logout
+                </div>
+                <div>
+                    <img src="../logout.svg" alt="Logout Icon"></img>
+                </div>
             </div>
         </div>
     )

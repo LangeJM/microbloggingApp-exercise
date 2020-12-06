@@ -18,14 +18,4 @@ const firebaseApp = firebase.initializeApp(config);
 const microBlogDb = firebaseApp.firestore();
 const firebaseUi = new firebaseui.auth.AuthUI(firebase.auth());
 
-
-// firebaseUi.start('#firebaseui-auth-container', {
-//   signInOptions: [
-//     firebase.auth.EmailAuthProvider.PROVIDER_ID,
-//     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-//   ],
-//   // Other config options...
-// });
-
-
 export {microBlogDb, firebaseUi, firebaseApp, firebase}
