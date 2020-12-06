@@ -12,7 +12,8 @@ class Profile extends React.Component {
             password: '',
             userImage: '',
             showChangesSaved: "invisible",
-            submitDisabled: ""
+            submitDisabled: "",
+            defaultProfileImage: this.props.defaultProfileImage
         }
     }
 
@@ -110,7 +111,7 @@ class Profile extends React.Component {
                             {/* 
                             Need the comments here for future wip 
                             */}
-                            <Image src={require('../defaultProfileImage.png')} alt="Cat profile picture" rounded fluid />
+                            <Image src={this.state.defaultProfileImage} alt="Default profile picture > cat" rounded fluid />
                             <Form.File 
                             className="position-relative"
                             // required

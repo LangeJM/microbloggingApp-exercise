@@ -14,8 +14,9 @@ import CreatePost from './components/CreatePost'
 import PostsList from './components/PostsList'
 import Profile from './components/Profile'
 import SignIn from './components/SignIn.jsx'
-// import microBlogDb from './components/firebase.js';
-import {microBlogDb} from './components/firebase.js';
+import { microBlogDb, firebaseAuth } from './components/firebase.js';
+import logoutIcon from './logout.svg'
+import defaultProfileImage from './defaultProfileImage.png'
 
 class App extends React.Component {
   constructor(props) {
@@ -25,12 +26,15 @@ class App extends React.Component {
       buttonDisabled: true,
       isLoading: false,
       userName: 'DemoNap',
+      logoutIcon: logoutIcon,
+      defaultProfileImage: defaultProfileImage,
+      isLoggedIn: null,
     }
-    this.apiUrl = 'https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet';
   }
 
   componentDidMount() {
     this.getFromFirebaseDb();    
+    this.isLoggedIn();
   }
 
   getFromFirebaseDb() {
@@ -52,7 +56,21 @@ class App extends React.Component {
     this.setState({ userName: newUsername }); 
   }
 
+  isLoggedIn() {
+      firebaseAuth.onAuthStateChanged(firebaseUser => {
+      if (firebaseUser) {
+        console.log("Logged in")
+      } else {
+        if (this.state.isLoggedIn !== false) {
+          this.setState({ isLoggedIn: false });
+          console.log("Not logged in")
+        };
+      }
+    });
+  }
+
   render() {
+    // this.isLoggedIn();
     const isLoading = this.state.isLoading;
     let element;
     if (isLoading) {
@@ -62,28 +80,27 @@ class App extends React.Component {
         </div>;
     } else {
       element = <PostsList className="row d-flex" tweets={this.state.tweets} />;
-    }
+    };
+
     return (
       <Router>
         <Switch>
-          <Route path="/profile">
+          <>
             <div className="App justify-content-center">
-            <Navigation />
-            <Profile displayUsername = {this.state.userName} onNewUsername={(newUsername) => this.onNewUsername(newUsername)}/>
+                <Route path="/profile">
+                    <Navigation isLoggedIn={this.state.isLoggedIn} logoutIcon={this.state.logoutIcon}/>
+                    <Profile defaultProfileImage={this.state.defaultProfileImage} displayUsername = {this.state.userName} onNewUsername={(newUsername) => this.onNewUsername(newUsername)}/>
+                </Route>
+                <Route path="/home">
+                    <Navigation isLoggedIn={this.state.isLoggedIn} logoutIcon={this.state.logoutIcon}/>
+                    <CreatePost className="row d-flex" userName = {this.state.userName} onNewTweet={(newTweet) => this.onNewTweet(newTweet)} buttonDisabled={this.state.buttonDisabled}/>
+                    {element}
+                </Route>
+                <Route exact path="/">
+              <SignIn isLoggedIn={ this.state.isLoggedIn}/>
+                </Route>              
             </div>
-          </Route>
-          <Route path="/home">
-            <div className="App justify-content-center">
-              <Navigation />
-              <CreatePost className="row d-flex" userName = {this.state.userName} onNewTweet={(newTweet) => this.onNewTweet(newTweet)} buttonDisabled={this.state.buttonDisabled}/>
-              {element}
-            </div>
-          </Route>
-          <Route path="/">
-            <div className="App justify-content-center">
-              <SignIn />
-            </div>
-        </Route>
+          </>
         </Switch>
       </Router>
     );

@@ -1,11 +1,28 @@
-import React from 'react'
-import Navbar from 'react-bootstrap/Navbar'
-import Nav from 'react-bootstrap/Nav'
+import React from 'react';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import {
   Link
 } from "react-router-dom";
+import { firebase } from './firebase.js';
+import { Redirect } from "react-router-dom";
 
-const Navigation = () => {
+const Navigation = (props) => {
+
+    function handleLogOut(event) {
+        event.preventDefault();
+        console.log('Logging out')
+        firebase.auth().signOut().then(function() {
+            console.log('sign out successful')
+        }).catch(function(error) {
+            console.log(error);
+        });
+    }
+
+    if (props.isLoggedIn === false) {
+      console.log(props.isLoggedIn);
+      return <Redirect to="/" />
+    } else {
     return (
         <div className="nav-bar d-flex justify-content-center" >
             <div className="ml-5">
@@ -19,22 +36,22 @@ const Navigation = () => {
             </div>
             <div className="ml-auto d-flex justify-content-center flex-column">
                 <div className="d-flex row">
-                    <div className="px-2 pt-1">
+                    <div className="small px-2 pt-1">
                     Logged in as:
                     </div>
-                    <div className="px-1 pt-1 mr-5">
+                    <div className="small px-1 pt-1 mr-5">
                         Placeholder
                     </div>
                 </div>
-                <div className="ml-5 d-flex row">
-                    Logout
-                </div>
-                <div>
-                    <img src="../logout.svg" alt="Logout Icon"></img>
+                <div className="ml-5 d-flex row small">
+                    <button id="logout-button" type="button" className="mt-1 btn-sm btn-primary d-flex align-items-center" onClick={event => handleLogOut(event)}>
+                    <div className='small mr-2'>Logout</div>
+                    <img id="logout-image" src={props.logoutIcon} alt="Logout Icon"></img>
+                    </button>
                 </div>
             </div>
         </div>
-    )
+    )}
 }
 
 export default Navigation;

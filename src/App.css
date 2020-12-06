@@ -54,3 +54,11 @@ body {
   text-align: left;
   margin: 0.1rem;
 }
+
+#logout-image {
+  height: 0.8rem;
+}
+
+#logout-button {
+  height: 1.4rem;
+}

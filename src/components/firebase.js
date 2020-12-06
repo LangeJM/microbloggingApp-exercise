@@ -16,6 +16,8 @@ const config = {
 
 const firebaseApp = firebase.initializeApp(config);
 const microBlogDb = firebaseApp.firestore();
-const firebaseUi = new firebaseui.auth.AuthUI(firebase.auth());
+const firebaseAuth = firebase.auth();
+const firebaseUi = new firebaseui.auth.AuthUI(firebaseAuth);
 
-export {microBlogDb, firebaseUi, firebaseApp, firebase}
+
+export {firebaseAuth, microBlogDb, firebaseUi, firebaseApp, firebase}
