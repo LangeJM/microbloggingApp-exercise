@@ -1,36 +1,41 @@
 import React from 'react';
 import { Form, Image, Button, } from 'react-bootstrap'
-import {microBlogDb} from './firebase';
-import { v4 as uuidv4 } from 'uuid';
+import { microBlogDb } from './firebase';
 
 class Profile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: 'Test0815',
-            email: '',
-            password: '',
-            userImage: '',
-            showChangesSaved: "invisible",
-            submitDisabled: "",
-            defaultProfileImage: this.props.defaultProfileImage
+            userName: ' ',
+            email: ' ',
+            uid: ' ',
+            password: ' ',
+            userImage: ' ',
+            // userImage: this.props.defaultProfileImage,
+            showChangesSaved: 'invisible',
+            submitDisabled:  ' ',
         }
     }
 
-    handleNewUsername(event) {
-        const userName = event.target.value; 
-        this.setState({ userName: userName });
+    static getDerivedStateFromProps(props, state) { // This is to keep child component updated from parent. There are probably more elegant and efficient solutions for this.
+        if (props.displayName !== state.userName) {
+            return {
+                userName: props.displayName,
+                email: props.email,
+                uid: props.uid,
+                userImage: props.photoURL,
+            };
+        }
+        return null;
     }
 
-    handleNewEmail(event) {
-        const email = event.target.value;
-        this.setState({ email: email });
-        if (this.state.userName === '') this.setState({ username: email });
-    }
-
-    handleNewPassword(event) {
-        const password = event.target.value; 
-        this.setState({ password: password });
+    componentDidMount() {
+        this.setState({
+            userName: this.props.displayName,
+            email: this.props.email,
+            uid: this.props.uid,
+            userImage: this.props.photoURL,
+        })
     }
 
     handleNewUsernameSubmit(event) {
@@ -45,10 +50,9 @@ class Profile extends React.Component {
         const newUsername = this.state.userName;
         this.props.onNewUsername(newUsername);
 
-        const userId = `user-${uuidv4()}`.split('-').slice(0, 3).join('-');
         const userDate = new Date();
         //save to firebase database 
-        microBlogDb.collection('users').doc(userId).set({
+        microBlogDb.collection('users').doc(this.state.uid).set({
             userName: this.state.userName,
             email: this.state.email,
             password: this.state.password,
@@ -59,7 +63,6 @@ class Profile extends React.Component {
         });
     }
 
-
     render() {
         return (
             <div className="d-flex flex-column justify-content-center mt-5">
@@ -69,54 +72,39 @@ class Profile extends React.Component {
                 <div className="row justify-content-center">
                     <Form>
                         <Form.Group>
+                            <Form.Label className='font-weight-bold ml-2'>User Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 value={this.state.userName}
                                 placeholder="User name"
-                                onInput={event => this.handleNewUsername(event)}
+                                className='mb-4'
+                                // onInput={event => this.handleNewUsername(event)}
                             />
-                                
-                            <Form.Text className="text-muted">
-                                Will show email address when left empty.
+                            <Form.Text className="text-muted">                      
                             </Form.Text>
                         </Form.Group>
-                            
                         <Form.Group controlId="formBasicEmail">
-                            <Form.Label>Email address</Form.Label>
+                            <Form.Label className='font-weight-bold ml-2'>Email address</Form.Label>
                             <Form.Control
                                 type="email"
                                 value={this.state.email}
                                 placeholder="Enter email"
-                                onInput={event => this.handleNewEmail(event)}
+                                className='mb-5'
+                                // onInput={event => this.handleNewEmail(event)}
                             />
                             <Form.Text className="text-muted">
-                            We'll never share your email with anyone else.
                             </Form.Text>
-                        </Form.Group>
-
-                        <Form.Group controlId="formBasicPassword">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                type="password"
-                                value={this.state.password}
-                                placeholder="Enter Password"
-                                onInput={event => this.handleNewPassword(event)}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formBasicCheckbox">
-                            <Form.Check type="checkbox" label="Remember me" />
                         </Form.Group>
                         <Form.Group>
                             {/* 
                             Need the comments here for future wip 
                             */}
-                            <Image src={this.state.defaultProfileImage} alt="Default profile picture > cat" rounded fluid />
+                            <Image src={this.state.userImage} alt="Default profile picture > cat" rounded fluid />
                             <Form.File 
-                            className="position-relative"
+                            className="position-relative mt-4"
                             // required
                             // name="file"
-                            label="New Profile Picture"
+                            label="Upload New Profile Picture"
                             // onChange={handleChange}
                             // isInvalid={!!errors.file}
                             // feedback={errors.file}
@@ -126,7 +114,9 @@ class Profile extends React.Component {
                         </Form.Group>
                         <Button
                             variant="primary" type="submit"
-                            onClick={event => this.handleNewUsernameSubmit(event)}
+                            onClick={event => this.handleNewProfileImage(event)}
+                            className='mt-4'
+                            
                         >
                             Save Changes
                         </Button>

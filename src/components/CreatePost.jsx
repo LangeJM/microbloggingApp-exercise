@@ -6,14 +6,27 @@ import { v4 as uuidv4 } from 'uuid';
 class CreatePost extends React.Component {
     constructor(props) {
         super(props);
-        this.initialState = {
-            date: ' ',
-            content: ' ',
-            userName: this.props.userName,
+        this.state = {
+            date: '',
+            content: '',
+            userName: '',
             buttonDisabled: true,
             maxCharsClass: "invisible",
         };
-        this.state = this.initialState;
+    }
+
+    static getDerivedStateFromProps(props, state) { // This is to keep child component updated from parent. There are probably more elegant and efficient solutions for this.
+        if (props.userName !== state.userName) {
+            return {
+                userName: props.userName,
+            };
+        }
+        return null;
+    }
+
+    componentDidMount() {
+        this.setState({ userName: this.props.userName })
+        console.log("create post comp did mount", this.state.userName)
     }
 
     handleNewTweetSubmit(event) {
@@ -29,8 +42,6 @@ class CreatePost extends React.Component {
         console.error("An error occurred:", error);
         });
         this.setState({ content: '' });
-        //Still want to refresh tweet list (from firebase) on new tweet
-        this.props.onNewTweet();
     }
 
     handleBodyChange(event) {

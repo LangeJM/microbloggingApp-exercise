@@ -23,18 +23,26 @@ class App extends React.Component {
     super(props);
     this.state = {
       tweets: [],
+      user: {},
+
       buttonDisabled: true,
       isLoading: false,
-      userName: 'DemoNap',
+      isLoggedIn: true,
       logoutIcon: logoutIcon,
       defaultProfileImage: defaultProfileImage,
-      isLoggedIn: null,
     }
   }
-
+  
   componentDidMount() {
-    this.getFromFirebaseDb();    
     this.isLoggedIn();
+    this.alertOnNewDbDoc();
+  }
+
+  alertOnNewDbDoc() {
+    microBlogDb.collection("tweets").onSnapshot((querySnapshot) => {
+      if (querySnapshot) this.getFromFirebaseDb();
+      console.log("fired up update from DB")
+    });
   }
 
   getFromFirebaseDb() {
@@ -48,29 +56,65 @@ class App extends React.Component {
     }).then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
   }
 
-  onNewTweet() {
-    this.getFromFirebaseDb();
-  }
-
   onNewUsername(newUsername) {
     this.setState({ userName: newUsername }); 
   }
 
   isLoggedIn() {
-      firebaseAuth.onAuthStateChanged(firebaseUser => {
+    let userObject = {};
+    firebaseAuth.onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
         console.log("Logged in")
+        userObject = {
+          displayName: firebaseUser.displayName,
+          email: firebaseUser.email,
+          photoURL: firebaseUser.photoURL,
+          uid: firebaseUser.uid,
+          userName: '',
+        };
+        this.checkDbUserExists(userObject)
       } else {
         if (this.state.isLoggedIn !== false) {
           this.setState({ isLoggedIn: false });
           console.log("Not logged in")
         };
-      }
+      } 
     });
   }
 
+  checkDbUserExists(userObject) {
+    const userRef = microBlogDb.collection('users').doc(`${userObject.uid}`);
+    userRef.get().then((doc) => {
+      if (!doc.exists) {
+        this.saveNewUserToDb(userObject)
+        this.getUserFromDb(userObject)        
+      } else {
+        this.getUserFromDb(userObject)
+      }
+    }).catch(function (error) {
+      console.log('Error getting document: ', error);
+    });
+  }
+
+  saveNewUserToDb(userObject) {
+    microBlogDb.collection('users').doc(userObject.uid).set({
+      userObject
+    }).catch(function (error) {
+      console.error("An error occurred:", error);
+    });
+  }
+
+  getUserFromDb(userObject) {
+    const userRef = microBlogDb.collection('users').doc('RGWly4EFojPFOT6sehdGi1FMIqs2');
+    userRef.get().then((doc) => {      
+      this.setState({user: doc.data().userObject})
+          
+      }).catch(function (error) {
+        console.log('Error getting document from DB: ', error);
+      });
+  }
+
   render() {
-    // this.isLoggedIn();
     const isLoading = this.state.isLoading;
     let element;
     if (isLoading) {
@@ -81,6 +125,7 @@ class App extends React.Component {
     } else {
       element = <PostsList className="row d-flex" tweets={this.state.tweets} />;
     };
+    const navigationProps = <Navigation isLoggedIn = { this.state.isLoggedIn } logoutIcon = { this.state.logoutIcon } displayName = { this.state.user.displayName } />
 
     return (
       <Router>
@@ -88,12 +133,19 @@ class App extends React.Component {
           <>
             <div className="App justify-content-center">
                 <Route path="/profile">
-                    <Navigation isLoggedIn={this.state.isLoggedIn} logoutIcon={this.state.logoutIcon}/>
-                    <Profile defaultProfileImage={this.state.defaultProfileImage} displayUsername = {this.state.userName} onNewUsername={(newUsername) => this.onNewUsername(newUsername)}/>
+                    {navigationProps}
+                <Profile
+                  displayName={this.state.user.displayName}
+                  defaultProfileImage={this.state.defaultProfileImage}
+                  email={this.state.user.email}
+                  uid={this.state.user.uid}
+                  photoURL={this.state.user.photoURL}
+                  onNewUsername={(newUsername) => this.onNewUsername(newUsername)}
+                />
                 </Route>
                 <Route path="/home">
-                    <Navigation isLoggedIn={this.state.isLoggedIn} logoutIcon={this.state.logoutIcon}/>
-                    <CreatePost className="row d-flex" userName = {this.state.userName} onNewTweet={(newTweet) => this.onNewTweet(newTweet)} buttonDisabled={this.state.buttonDisabled}/>
+                    {navigationProps}
+                    <CreatePost className="row d-flex" userName={this.state.user.displayName} buttonDisabled={this.state.buttonDisabled}/>
                     {element}
                 </Route>
                 <Route exact path="/">

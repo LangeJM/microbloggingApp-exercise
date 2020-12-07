@@ -5,11 +5,12 @@ import React from 'react';
 //Most of belows code was taken from the https://firebase.google.com/docs/auth/web/firebaseui in an attempt to speed things up and return with a more custom solution later on if time permits.
 class SignIn extends React.Component {
     constructor(props) {
-        super(props);     
+        super(props);
+        this.state = {}
     }
-    
+
     componentDidMount() {
-        firebaseUi.start('#firebaseui-auth-container', this.uiConfig); 
+        firebaseUi.start('#firebaseui-auth-container', this.uiConfig);
     }
 
    uiConfig = {
@@ -34,7 +35,7 @@ class SignIn extends React.Component {
     };
 
     render () {
-        if (this.props.isLoggedIn === true) {
+        if (this.props.isLoggedIn === true) { //Needs fixing!!!
             return <Redirect to="/home" />
         } else {
             return (

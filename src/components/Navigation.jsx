@@ -40,7 +40,7 @@ const Navigation = (props) => {
                     Logged in as:
                     </div>
                     <div className="small px-1 pt-1 mr-5">
-                        Placeholder
+                        {props.displayName}
                     </div>
                 </div>
                 <div className="ml-5 d-flex row small">
