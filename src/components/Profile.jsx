@@ -11,7 +11,7 @@ class Profile extends React.Component {
             uid: ' ',
             password: ' ',
             userImage: ' ',
-            // userImage: this.props.defaultProfileImage,
+            defaultImage: ' ',
             showChangesSaved: 'invisible',
             submitDisabled:  ' ',
         }
@@ -24,6 +24,7 @@ class Profile extends React.Component {
                 email: props.email,
                 uid: props.uid,
                 userImage: props.photoURL,
+                defaultImage: props.defaultProfileImage,
             };
         }
         return null;
@@ -64,6 +65,11 @@ class Profile extends React.Component {
     }
 
     render() {
+        const { userImage, defaultImage } = this.state;
+        let profilePicture;
+        if (userImage) profilePicture = userImage;
+        else profilePicture = defaultImage;
+
         return (
             <div className="d-flex flex-column justify-content-center mt-5">
                 <div className="row justify-content-center ">
@@ -99,7 +105,7 @@ class Profile extends React.Component {
                             {/* 
                             Need the comments here for future wip 
                             */}
-                            <Image src={this.state.userImage} alt="Default profile picture > cat" rounded fluid />
+                            <Image src={profilePicture} alt="Default profile pic" className="profile-image" rounded fluid />
                             <Form.File 
                             className="position-relative mt-4"
                             // required
@@ -116,7 +122,6 @@ class Profile extends React.Component {
                             variant="primary" type="submit"
                             onClick={event => this.handleNewProfileImage(event)}
                             className='mt-4'
-                            
                         >
                             Save Changes
                         </Button>

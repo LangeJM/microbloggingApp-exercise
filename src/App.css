@@ -1,10 +1,12 @@
-/* html {
+html {
   min-height: 100vh;
+  min-width: 100vh;
 }
 
 body {
   height: 100%;
-} */
+  width: 100%;
+}
 
 .App-link {
   color: #61dafb;
@@ -35,6 +37,11 @@ body {
     0 0 0 2px rgb(173, 216, 230, 0.2), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
 }
 
+.profile-image {
+  width: 100%;
+  max-width: 12rem;
+}
+
 /* For the time being the way to make the firebase pre-build ui fit better */
 .firebaseui-list-item {
   list-style-type: none;
@@ -55,10 +62,34 @@ body {
   margin: 0.1rem;
 }
 
+.firebaseui-button {
+  margin: 1rem 0.1rem;
+}
+
 #logout-image {
   height: 0.8rem;
 }
 
 #logout-button {
   height: 1.4rem;
+}
+
+.firebaseui-title {
+  font-size: 2rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+#ui-sign-in-email-input {
+  margin-left: 1rem;
+  position: fixed;
+  right: 46%;
+  width: 16rem;
+}
+
+#ui-sign-in-password-input {
+  margin-left: 1rem;
+  position: fixed;
+  right: 46%;
+  width: 16rem;
 }

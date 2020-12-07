@@ -64,7 +64,7 @@ class App extends React.Component {
     let userObject = {};
     firebaseAuth.onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
-        console.log("Logged in")
+        console.log("Logged in as", firebaseUser)
         userObject = {
           displayName: firebaseUser.displayName,
           email: firebaseUser.email,
@@ -72,6 +72,7 @@ class App extends React.Component {
           uid: firebaseUser.uid,
           userName: '',
         };
+        console.log('onAuthChange', userObject)
         this.checkDbUserExists(userObject)
       } else {
         if (this.state.isLoggedIn !== false) {
@@ -105,7 +106,7 @@ class App extends React.Component {
   }
 
   getUserFromDb(userObject) {
-    const userRef = microBlogDb.collection('users').doc('RGWly4EFojPFOT6sehdGi1FMIqs2');
+    const userRef = microBlogDb.collection('users').doc(userObject.uid);
     userRef.get().then((doc) => {      
       this.setState({user: doc.data().userObject})
           
@@ -131,7 +132,7 @@ class App extends React.Component {
       <Router>
         <Switch>
           <>
-            <div className="App justify-content-center">
+            <div className="App justify-content-center overflow-hidden">
                 <Route path="/profile">
                     {navigationProps}
                 <Profile
