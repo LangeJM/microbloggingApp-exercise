@@ -4,9 +4,10 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import { microBlogDb, firebaseAuth } from './components/firebase.js';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Spinner from 'react-bootstrap/Spinner'
 import './App.css';
 
 import Navigation from './components/Navigation'
@@ -14,7 +15,7 @@ import CreatePost from './components/CreatePost'
 import PostsList from './components/PostsList'
 import Profile from './components/Profile'
 import SignIn from './components/SignIn.jsx'
-import { microBlogDb, firebaseAuth } from './components/firebase.js';
+
 import logoutIcon from './logout.svg'
 import defaultProfileImage from './defaultProfileImage.png'
 
@@ -24,9 +25,7 @@ class App extends React.Component {
     this.state = {
       tweets: [],
       user: {},
-
       buttonDisabled: true,
-      isLoading: false,
       isLoggedIn: true,
       logoutIcon: logoutIcon,
       defaultProfileImage: defaultProfileImage,
@@ -38,45 +37,49 @@ class App extends React.Component {
     this.alertOnNewDbDoc();
   }
 
+  componentWillUnmount() {
+    // unsubscribe onSnapshot
+  }
+
   alertOnNewDbDoc() {
     microBlogDb.collection("tweets").onSnapshot((querySnapshot) => {
-      if (querySnapshot) this.getFromFirebaseDb();
-      console.log("fired up update from DB")
+      if (querySnapshot) this.getTweetsFromDb();
     });
   }
 
-  // getFromFirebaseDb() {
-  //   let tweetsArray = [];
-  //   this.setState({ isLoading: true })
-  //   microBlogDb.collection("tweets").get().then(function (querySnapshot) {
-  //     querySnapshot.forEach(function (doc) {
-  //       tweetsArray.push(doc.data());
-  //       tweetsArray = tweetsArray.sort((a, b) => (a.tweetCreationDate < b.tweetCreationDate) ? 1 : ((b.tweetCreationDate < a.tweetCreationDate) ? -1 : 0));   
-  //       });
-  //   }).then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
-  // }
+  getTweetsQuery = microBlogDb.collection("tweets").orderBy("tweetCreationDate", "desc").limit(10);
 
-  getFromFirebaseDb() {
+  getTweetsFromDb() {
     let tweetsArray = [];
-    this.setState({ isLoading: true })
-    microBlogDb.collection("tweets").get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        tweetsArray.push(doc.data());
-        tweetsArray = tweetsArray.sort((a, b) => (a.tweetCreationDate < b.tweetCreationDate) ? 1 : ((b.tweetCreationDate < a.tweetCreationDate) ? -1 : 0));   
+    this.setState({ isLoading: true });
+    this.getTweetsQuery
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          tweetsArray.push(doc.data());
         });
-    }).then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
+      })
+      .then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
   }
 
-
-  onNewUsername(newUsername) {
-    this.setState({ userName: newUsername }); 
+  handleMoreTweets() {
+    let tweetsArray = [];
+    this.setState({ isLoading: true });
+    this.getTweetsQuery
+      .startAfter(this.state.tweets[this.state.tweets.length - 1].tweetCreationDate)
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          tweetsArray.push(doc.data());
+        });
+      })
+      .then(() => this.setState({ tweets: [...this.state.tweets, ...tweetsArray], isLoading: false }));
   }
 
   isLoggedIn() {
     let userObject = {};
     firebaseAuth.onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
-        console.log("Logged in as", firebaseUser)
         userObject = {
           displayName: firebaseUser.displayName,
           email: firebaseUser.email,
@@ -84,12 +87,10 @@ class App extends React.Component {
           uid: firebaseUser.uid,
           userName: '',
         };
-        console.log('onAuthChange', userObject)
         this.checkDbUserExists(userObject)
       } else {
         if (this.state.isLoggedIn !== false) {
           this.setState({ isLoggedIn: false });
-          console.log("Not logged in")
         };
       } 
     });
@@ -105,7 +106,7 @@ class App extends React.Component {
         this.getUserFromDb(userObject)
       }
     }).catch(function (error) {
-      console.log('Error getting document: ', error);
+      console.error('Error getting document: ', error);
     });
   }
 
@@ -123,23 +124,13 @@ class App extends React.Component {
       this.setState({user: doc.data().userObject})
           
       }).catch(function (error) {
-        console.log('Error getting document from DB: ', error);
+        console.error('Error getting document from DB: ', error);
       });
   }
 
   render() {
-    const isLoading = this.state.isLoading;
-    let element;
-    if (isLoading) {
-      element = <div className="mt-5 d-flex flex-column align-items-center">
-        <Spinner animation="border" />
-        <div className="row mt-3">Updating Page...</div>
-        </div>;
-    } else {
-      element = <PostsList className="row d-flex" tweets={this.state.tweets} />;
-    };
+    
     const navigationProps = <Navigation isLoggedIn = { this.state.isLoggedIn } logoutIcon = { this.state.logoutIcon } displayName = { this.state.user.displayName } />
-
     return (
       <Router>
         <Switch>
@@ -153,18 +144,26 @@ class App extends React.Component {
                   email={this.state.user.email}
                   uid={this.state.user.uid}
                   photoURL={this.state.user.photoURL}
-                  onNewUsername={(newUsername) => this.onNewUsername(newUsername)}
                 />
                 </Route>
                 <Route path="/home">
                     {navigationProps}
                     <CreatePost className="row d-flex" userName={this.state.user.displayName} buttonDisabled={this.state.buttonDisabled}/>
-                    {element}
+                    <PostsList className="row d-flex" tweets={this.state.tweets} />
                 </Route>
                 <Route exact path="/">
               <SignIn isLoggedIn={ this.state.isLoggedIn}/>
                 </Route>              
             </div>
+            <InfiniteScroll
+              dataLength={this.state.tweets.length}
+              next={() => this.handleMoreTweets()}
+              hasMore={true}
+              scrollThreshold={"50px"}
+              loader={<h4>Loading...</h4>} // Fix has more to when end of db reached 
+            >
+            </InfiniteScroll>
+            
           </>
         </Switch>
       </Router>

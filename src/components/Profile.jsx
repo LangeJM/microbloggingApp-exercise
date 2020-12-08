@@ -17,7 +17,7 @@ class Profile extends React.Component {
         }
     }
 
-    // This is to keep child component updated from parent. There are probably more elegant and efficient solutions for this.
+    // Would love to have some feedback on this. My state management had issues, so I did this which was to keep the child component updated from parent. There are most probably more elegant and efficient solutions for this.
     static getDerivedStateFromProps(props, state) { 
         if (props.displayName !== state.userName) {
             return {

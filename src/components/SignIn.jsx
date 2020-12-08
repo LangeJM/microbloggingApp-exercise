@@ -28,14 +28,14 @@ class SignIn extends React.Component {
             firebase.auth.GoogleAuthProvider.PROVIDER_ID,
             firebase.auth.EmailAuthProvider.PROVIDER_ID,
         ],
-        // Terms of service url.
+        // Url - Terms of service.
         tosUrl: 'https://en.wikipedia.org/wiki/Terms_of_service',
-        // Privacy policy url.
+        // Url - Privacy policy.
         privacyPolicyUrl: 'https://en.wikipedia.org/wiki/Privacy_policy'      
     };
 
     render () {
-        if (this.props.isLoggedIn === true) { //Needs fixing!!!
+        if (this.props.isLoggedIn === true) {
             return <Redirect to="/home" />
         } else {
             return (

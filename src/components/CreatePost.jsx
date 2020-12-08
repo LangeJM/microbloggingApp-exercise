@@ -15,18 +15,14 @@ class CreatePost extends React.Component {
         };
     }
 
-    static getDerivedStateFromProps(props, state) { // This is to keep child component updated from parent. There are probably more elegant and efficient solutions for this.
+    // Would love to have some feedback on this. My state management had issues, so I did this which was to keep the child component updated from parent. There are most probably more elegant and efficient solutions for this.
+    static getDerivedStateFromProps(props, state) { 
         if (props.userName !== state.userName) {
             return {
                 userName: props.userName,
             };
         }
         return null;
-    }
-
-    componentDidMount() {
-        this.setState({ userName: this.props.userName })
-        console.log("create post comp did mount", this.state.userName)
     }
 
     handleNewTweetSubmit(event) {
