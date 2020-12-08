@@ -29,12 +29,17 @@ class App extends React.Component {
       isLoggedIn: true,
       logoutIcon: logoutIcon,
       defaultProfileImage: defaultProfileImage,
+      tweetBatchesInDb: '',
+      counterTweetScrolls: 0,
     }
   }
   
   componentDidMount() {
     this.isLoggedIn();
     this.alertOnNewDbDoc();
+    microBlogDb.collection("tweets").get().then( (querySnapshot) => {
+      this.setState({tweetBatchesInDb: Math.ceil(querySnapshot.size/10)})
+});
   }
 
   componentWillUnmount() {
@@ -63,17 +68,19 @@ class App extends React.Component {
   }
 
   handleMoreTweets() {
+    const { tweets, counterTweetScrolls } = this.state;
     let tweetsArray = [];
     this.setState({ isLoading: true });
     this.getTweetsQuery
-      .startAfter(this.state.tweets[this.state.tweets.length - 1].tweetCreationDate)
+      .startAfter(tweets[tweets.length - 1].tweetCreationDate)
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           tweetsArray.push(doc.data());
         });
       })
-      .then(() => this.setState({ tweets: [...this.state.tweets, ...tweetsArray], isLoading: false }));
+      .then(() => this.setState({ tweets: [...tweets, ...tweetsArray], isLoading: false }));
+    this.setState({ counterTweetScrolls: counterTweetScrolls + 1 })
   }
 
   isLoggedIn() {
@@ -129,8 +136,8 @@ class App extends React.Component {
   }
 
   render() {
-    
-    const navigationProps = <Navigation isLoggedIn = { this.state.isLoggedIn } logoutIcon = { this.state.logoutIcon } displayName = { this.state.user.displayName } />
+    const { isLoggedIn, logoutIcon, user, defaultProfileImage, buttonDisabled, tweets, counterTweetScrolls, tweetBatchesInDb } = this.state;
+    const navigationProps = <Navigation isLoggedIn = { isLoggedIn } logoutIcon = { logoutIcon } displayName = { user.displayName } />
     return (
       <Router>
         <Switch>
@@ -138,32 +145,32 @@ class App extends React.Component {
             <div className="App justify-content-center overflow-hidden">
                 <Route path="/profile">
                     {navigationProps}
-                <Profile
-                  displayName={this.state.user.displayName}
-                  defaultProfileImage={this.state.defaultProfileImage}
-                  email={this.state.user.email}
-                  uid={this.state.user.uid}
-                  photoURL={this.state.user.photoURL}
-                />
+                  <Profile
+                    displayName={user.displayName}
+                    defaultProfileImage={defaultProfileImage}
+                    email={user.email}
+                    uid={user.uid}
+                    photoURL={user.photoURL}
+                  />
                 </Route>
                 <Route path="/home">
                     {navigationProps}
-                    <CreatePost className="row d-flex" userName={this.state.user.displayName} buttonDisabled={this.state.buttonDisabled}/>
-                    <PostsList className="row d-flex" tweets={this.state.tweets} />
+                    <CreatePost className="row d-flex" userName={user.displayName} buttonDisabled={buttonDisabled}/>
+                    <PostsList className="row d-flex" tweets={tweets} />
+                    <InfiniteScroll className="m-3 d-flex justify-content-center"
+                      dataLength={tweets.length}
+                      next={() => this.handleMoreTweets()}
+                      hasMore={counterTweetScrolls < tweetBatchesInDb}
+                      scrollThreshold={"100px"}
+                      loader={<h4>Loading...</h4>} 
+                      // endMessage={"No more tweets to fetch" }
+                    >
+                    </InfiniteScroll>
                 </Route>
                 <Route exact path="/">
-              <SignIn isLoggedIn={ this.state.isLoggedIn}/>
+              <SignIn isLoggedIn={ isLoggedIn}/>
                 </Route>              
             </div>
-            <InfiniteScroll
-              dataLength={this.state.tweets.length}
-              next={() => this.handleMoreTweets()}
-              hasMore={true}
-              scrollThreshold={"50px"}
-              loader={<h4>Loading...</h4>} // Fix has more to when end of db reached 
-            >
-            </InfiniteScroll>
-            
           </>
         </Switch>
       </Router>
