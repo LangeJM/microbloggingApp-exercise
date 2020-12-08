@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Image, Button, } from 'react-bootstrap'
-import { microBlogDb } from './firebase';
+import { microBlogDb, firebaseStorage} from './firebase';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -9,15 +9,16 @@ class Profile extends React.Component {
             userName: ' ',
             email: ' ',
             uid: ' ',
-            password: ' ',
             userImage: ' ',
             defaultImage: ' ',
             showChangesSaved: 'invisible',
-            submitDisabled:  ' ',
+            pendingUserImage: ' ',
+            errorMsgFileType: ' ',
         }
     }
 
-    static getDerivedStateFromProps(props, state) { // This is to keep child component updated from parent. There are probably more elegant and efficient solutions for this.
+    // This is to keep child component updated from parent. There are probably more elegant and efficient solutions for this.
+    static getDerivedStateFromProps(props, state) { 
         if (props.displayName !== state.userName) {
             return {
                 userName: props.displayName,
@@ -30,38 +31,33 @@ class Profile extends React.Component {
         return null;
     }
 
-    componentDidMount() {
-        this.setState({
-            userName: this.props.displayName,
-            email: this.props.email,
-            uid: this.props.uid,
-            userImage: this.props.photoURL,
-        })
+    handleImageChange(event) {
+        const profileImage = event.target.files[0];
+        this.setState({ pendingUserImage: profileImage, errorMsgFileType: ''})
     }
 
-    handleNewUsernameSubmit(event) {
+    handleNewProfileImage(event) {
         event.preventDefault();
-        let { userName, email, password } = this.state;
-        this.setState({
-            userName: userName,
-            email: email,
-            password: password,
-            showChangesSaved: 'visible',
-        });
-        const newUsername = this.state.userName;
-        this.props.onNewUsername(newUsername);
-
-        const userDate = new Date();
-        //save to firebase database 
-        microBlogDb.collection('users').doc(this.state.uid).set({
-            userName: this.state.userName,
-            email: this.state.email,
-            password: this.state.password,
-            userImage: this.state.userImage,
-            userCreationDate: userDate
-        }).catch(function (error) {
-        console.error("An error occurred:", error);
-        });
+        const fileTypeImage = this.state.pendingUserImage.name.split('.')[1];
+        const supportImageTypes = ['jpeg', 'jpg', 'png', 'gif'];
+        if (!supportImageTypes.includes(fileTypeImage)) {
+            this.setState({ errorMsgFileType: `Please use one of the following formats: ${supportImageTypes.join(', ')}` })
+            console.log(this.state.errorMsgFileType)
+        } else {
+            //store the image to Firebase Storage
+            firebaseStorage.ref(`/images/${this.state.pendingUserImage.name}`).put(this.state.pendingUserImage) 
+            // Get image URL from Firebase Storage and write it to User DB 
+            firebaseStorage.ref('images').child(this.state.pendingUserImage.name).getDownloadURL() 
+                .then(fireBaseUrl => { this.setState({ userImage: fireBaseUrl }) })
+                .then(() => {
+                    microBlogDb.collection('users').doc(this.state.uid).update({
+                        'userObject.photoURL': this.state.userImage
+                    })
+                })
+                .catch(function (error) {
+                    console.error("An error occurred:", error);
+                });
+        }
     }
 
     render() {
@@ -76,7 +72,7 @@ class Profile extends React.Component {
                     <h1 className="mb-5 text-left">Profile</h1>
                 </div>
                 <div className="row justify-content-center">
-                    <Form>
+                    <Form className="w-25">
                         <Form.Group>
                             <Form.Label className='font-weight-bold ml-2'>User Name</Form.Label>
                             <Form.Control
@@ -84,7 +80,6 @@ class Profile extends React.Component {
                                 value={this.state.userName}
                                 placeholder="User name"
                                 className='mb-4'
-                                // onInput={event => this.handleNewUsername(event)}
                             />
                             <Form.Text className="text-muted">                      
                             </Form.Text>
@@ -96,27 +91,22 @@ class Profile extends React.Component {
                                 value={this.state.email}
                                 placeholder="Enter email"
                                 className='mb-5'
-                                // onInput={event => this.handleNewEmail(event)}
                             />
                             <Form.Text className="text-muted">
                             </Form.Text>
                         </Form.Group>
                         <Form.Group>
-                            {/* 
-                            Need the comments here for future wip 
-                            */}
                             <Image src={profilePicture} alt="Default profile pic" className="profile-image" rounded fluid />
                             <Form.File 
-                            className="position-relative mt-4"
-                            // required
-                            // name="file"
-                            label="Upload New Profile Picture"
-                            // onChange={handleChange}
-                            // isInvalid={!!errors.file}
-                            // feedback={errors.file}
-                            // id="validationFormik107"
-                            // feedbackTooltip
+                                className="position-relative mt-4 font-weight-bold"
+                                name="file"
+                                label="Change Profile Picture"
+                                onChange={event => this.handleImageChange(event)}
+                                feedback={this.state.errorMsgFileType}
+                                
+                                feedbackTooltip={this.state.errorMsgFileType}
                             />
+                            <div className ="font-weight-light text-danger">{this.state.errorMsgFileType}</div>
                         </Form.Group>
                         <Button
                             variant="primary" type="submit"

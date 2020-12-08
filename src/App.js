@@ -45,6 +45,17 @@ class App extends React.Component {
     });
   }
 
+  // getFromFirebaseDb() {
+  //   let tweetsArray = [];
+  //   this.setState({ isLoading: true })
+  //   microBlogDb.collection("tweets").get().then(function (querySnapshot) {
+  //     querySnapshot.forEach(function (doc) {
+  //       tweetsArray.push(doc.data());
+  //       tweetsArray = tweetsArray.sort((a, b) => (a.tweetCreationDate < b.tweetCreationDate) ? 1 : ((b.tweetCreationDate < a.tweetCreationDate) ? -1 : 0));   
+  //       });
+  //   }).then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
+  // }
+
   getFromFirebaseDb() {
     let tweetsArray = [];
     this.setState({ isLoading: true })
@@ -55,6 +66,7 @@ class App extends React.Component {
         });
     }).then(() => this.setState({ tweets: tweetsArray, isLoading: false }));
   }
+
 
   onNewUsername(newUsername) {
     this.setState({ userName: newUsername }); 

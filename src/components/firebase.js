@@ -2,6 +2,7 @@ import firebase from 'firebase/app';
 import "firebase/auth";
 import "firebase/firestore";
 import * as firebaseui from 'firebaseui'
+import 'firebase/storage';
 
 
 const config = {
@@ -18,6 +19,7 @@ const firebaseApp = firebase.initializeApp(config);
 const microBlogDb = firebaseApp.firestore();
 const firebaseAuth = firebase.auth();
 const firebaseUi = new firebaseui.auth.AuthUI(firebaseAuth);
+const firebaseStorage = firebase.storage();
 
 
-export {firebaseAuth, microBlogDb, firebaseUi, firebaseApp, firebase}
+export {firebaseAuth, microBlogDb, firebaseUi, firebaseApp, firebaseStorage, firebase}
