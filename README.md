@@ -1,3 +1,3 @@
-# Getting Started with Create React App
+# Microbloggin App built with React and Firebase
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Deployed to firebase. Link to [my Microbloggin App](https://microblogging-app-jml.web.app/).
