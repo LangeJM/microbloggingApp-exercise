@@ -11,16 +11,13 @@ const Navigation = (props) => {
 
     function handleLogOut(event) {
         event.preventDefault();
-        console.log('Logging out')
         firebase.auth().signOut().then(function() {
-            console.log('sign out successful')
         }).catch(function(error) {
             console.log(error);
         });
     }
 
     if (props.isLoggedIn === false) {
-      console.log(props.isLoggedIn);
       return <Redirect to="/" />
     } else {
     return (

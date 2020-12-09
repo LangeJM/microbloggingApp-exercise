@@ -9,7 +9,6 @@ class CreatePost extends React.Component {
         this.state = {
             date: '',
             content: '',
-            userName: '',
             buttonDisabled: true,
             maxCharsClass: "invisible",
         };
@@ -31,11 +30,11 @@ class CreatePost extends React.Component {
         const tweetId = `tweet-${uuidv4()}`;
         //save to firebase database 
         microBlogDb.collection('tweets').doc(tweetId).set({
-            userName: this.state.userName,
+            userName: this.props.userName,
             content: this.state.content,
             tweetCreationDate: newDate,
         }).catch(function (error) {
-        console.error("An error occurred:", error);
+        window.confirm("An error occurred while attempting to retrieve the tweets:", error);
         });
         this.setState({ content: '' });
     }
