@@ -6,7 +6,7 @@ import 'firebase/storage';
 
 
 const config = {
-  apiKey: "***REMOVED***",
+  apiKey: "AIzaSyAkp_eahNWZvWGmQx9OlQRAVlI8bVGt1ps",
   authDomain: "microblogging-app-jml.firebaseapp.com",
   projectId: "microblogging-app-jml",
   storageBucket: "microblogging-app-jml.appspot.com",

@@ -39,7 +39,7 @@ class App extends React.Component {
     this.alertOnNewDbDoc();
     microBlogDb.collection("tweets").get().then( (querySnapshot) => {
       this.setState({tweetBatchesInDb: Math.ceil(querySnapshot.size/10)})
-});
+    });
   }
 
   componentWillUnmount() {
